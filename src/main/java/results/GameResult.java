@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import state.Difficulty;
 
 import javax.persistence.*;
 import java.time.Duration;
@@ -37,7 +38,9 @@ public class GameResult {
     /**
      * The difficulty of the sudoku played by the player.
      */
-    private int difficulty;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Difficulty difficulty;
 
     /**
      * The duration of the game.

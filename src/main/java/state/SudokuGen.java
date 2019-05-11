@@ -7,7 +7,11 @@ import java.util.Random;
  class SudokuGen {
 
 
-    private Difficulty difficulty;
+     public Difficulty getDifficulty() {
+         return difficulty;
+     }
+
+     private Difficulty difficulty;
 
      SudokuGen() { }
 

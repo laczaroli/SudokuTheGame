@@ -143,6 +143,7 @@
                 <version>3.2.1</version>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
@@ -215,7 +216,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>src/main/resources/META-INF/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
             <plugin>

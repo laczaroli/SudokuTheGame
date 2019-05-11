@@ -1,12 +1,28 @@
 package state;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import results.GameResult;
+import results.GameResultDao;
+import util.guice.PersistenceModule;
+
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Scanner;
+import java.util.TimeZone;
 
 public class SudokuState implements Cloneable {
     private int[][] tray;
     private SudokuGen sudokuGen = new SudokuGen();
     private SudokuChecker sudokuChecker = new SudokuChecker();
 
+    public ZonedDateTime start,stop;
+
+    public Difficulty getDifficulty(){
+        return sudokuGen.getDifficulty();
+    }
     private void initBoard(Difficulty difficulty) {
         sudokuGen.setDifficulty( difficulty );
         tray = sudokuGen.getDesiredGrid();
@@ -65,11 +81,30 @@ public class SudokuState implements Cloneable {
         System.out.println( "Tops: top" );
         System.out.println( "Exit: exit" );
     }
+    public GameResult save(String name){
+       return GameResult.builder()
+                .player( name )
+                .difficulty( getDifficulty() )
+                .solved( isEnd() )
+                .created( ZonedDateTime.now() )
+                .duration( Duration.between( start,stop ) )
+                .build();
+    }
 
     public static void main(String[] args) {
+        Injector injector = Guice.createInjector(new PersistenceModule("game"));
+        GameResultDao gameDao = injector.getInstance( GameResultDao.class);
+
+        String name;
+
+
+
 
         SudokuState state = new SudokuState();
         Scanner in = new Scanner( System.in );
+        System.out.println("Type in your name!");
+        name = in.nextLine();
+
 
 
         while (true) {
@@ -78,10 +113,14 @@ public class SudokuState implements Cloneable {
             try {
                 switch (in.nextLine()) {
                     case "play":
+
                         state.play();
+
+                        gameDao.persist(state.save( name ));
                         break;
                     case "top":
-                        // state.printTops();
+                        System.out.println(state.getTops(gameDao.findBest( 10 )));
+
                         break;
                     case "exit":
                         System.exit( 0 );
@@ -94,16 +133,28 @@ public class SudokuState implements Cloneable {
         }
 
 
+
+    }
+
+    private String getTops(List<GameResult> best) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Top 10 players \n");
+        sb.append("Name \t Difficulty \t Duration \n");
+        for(var element: best){
+            sb.append(element.getPlayer()+" \t "+ element.getDifficulty() +" \t\t\t "+ element.getDuration().getSeconds()+"s\n");
+        }
+        return sb.toString();
     }
 
     private void play() {
-        Integer row, col, number;
+        int row, col, number;
 
 
         System.out.println( "Select a diffculty!(0-2)" );
         System.out.println( "Easy" );
         System.out.println( "Medium" );
         System.out.println( "Hard" );
+        start = ZonedDateTime.now();
         Scanner in = new Scanner( System.in );
         switch (in.nextInt()) {
             case 0:
@@ -120,11 +171,14 @@ public class SudokuState implements Cloneable {
 
 
         }
+        initBoard( Difficulty.TEST);
 
 
         while (!isEnd()) {
             System.out.println( toString() );
-            System.out.println( "Enter the row, column and the number you want to add: " );
+            System.out.println( "Enter the row, column and the number you want to add or if you want to quit(q): " );
+            if( in.nextLine().equals( "q" ))
+                break;
             row = in.nextInt();
             col = in.nextInt();
             number = in.nextInt();
@@ -134,8 +188,9 @@ public class SudokuState implements Cloneable {
                 System.out.println( e.getMessage() );
             }
 
-
+            stop = ZonedDateTime.now();
         }
+
     }
 
 
