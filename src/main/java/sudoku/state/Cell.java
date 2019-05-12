@@ -1,6 +1,6 @@
-package state;
+package sudoku.state;
 
-public enum Square {
+public enum Cell {
     EMPTY,
     ONE,
     TWO,
@@ -12,6 +12,8 @@ public enum Square {
     EIGHT,
     NINE;
 
+    boolean isMoveable = false;
+
     /**
      * Returns the instance represented by the value specified.
      *
@@ -21,7 +23,7 @@ public enum Square {
      * represent an instance
      */
 
-    public static Square of(int value) {
+    public static Cell of(int value) {
         if (value < 0 || value >= values().length) {
             throw new IllegalArgumentException();
         }
@@ -40,19 +42,25 @@ public enum Square {
     /**
      * Rolls the cube to the direction specified.
      *
-     * @param square the number should be written
+     * @param cell the number should be written
      * @return the cube rolled to the direction specified
      * @throws UnsupportedOperationException if the method is invoked on the
      * {@link #EMPTY} instance.
      */
-    public Square writeTo(Square square) {
+    public Cell writeTo(Cell cell) {
         if (this == EMPTY) {
             throw new UnsupportedOperationException();
         }
-        return values()[square.ordinal()];
+        return values()[cell.ordinal()];
     }
 
     public String toString() {
         return Integer.toString(ordinal());
+    }
+
+
+
+    public void setMoveable(boolean moveable) {
+        isMoveable = moveable;
     }
 }

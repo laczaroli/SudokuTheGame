@@ -1,17 +1,17 @@
-package results;
+package sudoku.results;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import state.Difficulty;
+import sudoku.state.Difficulty;
 
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
 /**
- * Class representing the results of a game played by a specific player.
+ * Class representing the sudoku.results of a game played by a specific player.
  */
 @Data
 @NoArgsConstructor
@@ -49,7 +49,7 @@ public class GameResult {
     private Duration duration;
 
     /**
-     * The timestamp when the results was saved.
+     * The timestamp when the sudoku.results was saved.
      */
     @Column(nullable = false)
     private ZonedDateTime created;

@@ -1,47 +1,84 @@
-package state;
+package sudoku.state;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-import results.GameResult;
-import results.GameResultDao;
+import sudoku.results.GameResult;
+import sudoku.results.GameResultDao;
 import util.guice.PersistenceModule;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Scanner;
-import java.util.TimeZone;
 
 public class SudokuState implements Cloneable {
-    private int[][] tray;
+    public ZonedDateTime start, stop;
+    public int[][] tray;
     private SudokuGen sudokuGen = new SudokuGen();
-    private SudokuChecker sudokuChecker = new SudokuChecker();
 
-    public ZonedDateTime start,stop;
+    public static void main(String[] args) {
+        Injector injector = Guice.createInjector( new PersistenceModule( "game" ) );
+        GameResultDao gameDao = injector.getInstance( GameResultDao.class );
 
-    public Difficulty getDifficulty(){
+        String name;
+
+
+        SudokuState state = new SudokuState();
+        Scanner in = new Scanner( System.in );
+        System.out.println( "Type in your name!" );
+        name = in.nextLine();
+
+
+        while (true) {
+            System.out.println( "What would you want to do?" );
+            state.printMenu();
+            try {
+                switch (in.nextLine()) {
+                    case "play":
+
+                        state.play();
+
+                        gameDao.persist( state.save( name ) );
+                        break;
+                    case "top":
+                        System.out.println( state.getTops( gameDao.findBest( 10 ) ) );
+
+                        break;
+                    case "exit":
+                        System.exit( 0 );
+                    default:
+                        throw new IllegalArgumentException( "Invalid option" );
+                }
+            } catch (Exception e) {
+                System.out.println( e.getMessage() );
+            }
+        }
+
+
+    }
+
+    public Difficulty getDifficulty() {
         return sudokuGen.getDifficulty();
     }
-    private void initBoard(Difficulty difficulty) {
+
+    public void initBoard(Difficulty difficulty) {
         sudokuGen.setDifficulty( difficulty );
         tray = sudokuGen.getDesiredGrid();
 
 
     }
 
-    public void writeToSudokuGrid(Integer row, Integer col, Integer number) {
-        sudokuChecker.setGrid( tray );
+    public void writeToSudokuGrid(int row, int col, int number) throws IllegalArgumentException {
 
 
-        if (sudokuChecker.isValidMove( number, row, col )) {
+        if (sudokuGen.isValidCell(row,col) && sudokuGen.isValidValue( number ) && sudokuGen.checkConflict( row, col, number )   )
             tray[row][col] = number;
-        } else {
-            System.out.println( "Invalid move" );
+        else {
+            throw new IllegalArgumentException( "Invalid cell or number" );
         }
 
-    }
 
+    }
 
     private boolean isEnd() {
         for (int[] row : tray) {
@@ -54,7 +91,6 @@ public class SudokuState implements Cloneable {
         return true;
 
     }
-
 
     @Override
     public String toString() {
@@ -81,67 +117,28 @@ public class SudokuState implements Cloneable {
         System.out.println( "Tops: top" );
         System.out.println( "Exit: exit" );
     }
-    public GameResult save(String name){
-       return GameResult.builder()
+
+    public GameResult save(String name) {
+        return GameResult.builder()
                 .player( name )
                 .difficulty( getDifficulty() )
                 .solved( isEnd() )
                 .created( ZonedDateTime.now() )
-                .duration( Duration.between( start,stop ) )
+                .duration( Duration.between( start, stop ) )
                 .build();
-    }
-
-    public static void main(String[] args) {
-        Injector injector = Guice.createInjector(new PersistenceModule("game"));
-        GameResultDao gameDao = injector.getInstance( GameResultDao.class);
-
-        String name;
-
-
-
-
-        SudokuState state = new SudokuState();
-        Scanner in = new Scanner( System.in );
-        System.out.println("Type in your name!");
-        name = in.nextLine();
-
-
-
-        while (true) {
-            System.out.println( "What would you want to do?" );
-            state.printMenu();
-            try {
-                switch (in.nextLine()) {
-                    case "play":
-
-                        state.play();
-
-                        gameDao.persist(state.save( name ));
-                        break;
-                    case "top":
-                        System.out.println(state.getTops(gameDao.findBest( 10 )));
-
-                        break;
-                    case "exit":
-                        System.exit( 0 );
-                    default:
-                        throw new IllegalArgumentException( "Invalid option" );
-                }
-            } catch (Exception e) {
-                System.out.println( e.getMessage() );
-            }
-        }
-
-
-
     }
 
     private String getTops(List<GameResult> best) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Top 10 players \n");
-        sb.append("Name \t Difficulty \t Duration \n");
-        for(var element: best){
-            sb.append(element.getPlayer()+" \t "+ element.getDifficulty() +" \t\t\t "+ element.getDuration().getSeconds()+"s\n");
+        sb.append( "Top 10 players \n" );
+        sb.append( "Name \t Difficulty \t Duration \n" );
+        if (best.isEmpty()) {
+            sb.append( "Empty :(" );
+        } else {
+            for (var element : best) {
+                sb.append( element.getPlayer() + " \t " + element.getDifficulty() + " \t\t\t " + element.getDuration().getSeconds() + "s\n" );
+            }
+
         }
         return sb.toString();
     }
@@ -171,17 +168,19 @@ public class SudokuState implements Cloneable {
 
 
         }
-        initBoard( Difficulty.TEST);
+        initBoard( Difficulty.TEST );
 
 
         while (!isEnd()) {
             System.out.println( toString() );
             System.out.println( "Enter the row, column and the number you want to add or if you want to quit(q): " );
-            if( in.nextLine().equals( "q" ))
+
+            if (in.nextLine().equals( "q" ))
                 break;
             row = in.nextInt();
             col = in.nextInt();
             number = in.nextInt();
+
             try {
                 writeToSudokuGrid( row - 1, col - 1, number );
             } catch (Exception e) {
@@ -190,6 +189,7 @@ public class SudokuState implements Cloneable {
 
             stop = ZonedDateTime.now();
         }
+        System.out.println( toString() );
 
     }
 

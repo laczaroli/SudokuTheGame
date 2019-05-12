@@ -1,33 +1,35 @@
-package state;
+package sudoku.state;
 
 
 import java.util.ArrayList;
 import java.util.Random;
 
- class SudokuGen {
+class SudokuGen {
+    SudokuGen() {
+    }
 
 
-     public Difficulty getDifficulty() {
-         return difficulty;
-     }
 
-     private Difficulty difficulty;
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
 
-     SudokuGen() { }
+    private Difficulty difficulty;
 
-    private int[][] Sudoku = new int[9][9];
+
+    private int[][] sudoku = new int[9][9];
 
     private Random rand = new Random();
 
     private ArrayList<ArrayList<Integer>> available = new ArrayList<>();
 
-     int[][] getDesiredGrid() {
+    int[][] getDesiredGrid() {
         generateGrid();
-        return removeElements( Sudoku );
+        return removeElements( sudoku );
     }
 
 
-     void generateGrid() {
+    void generateGrid() {
 
 
         int currentPos = 0;
@@ -35,7 +37,7 @@ import java.util.Random;
 
         while (currentPos < 81) {
             if (currentPos == 0) {
-                clearGrid( Sudoku );
+                clearGrid( sudoku );
             }
 
             if (available.get( currentPos ).size() != 0) {
@@ -46,7 +48,7 @@ import java.util.Random;
                     int xPos = currentPos % 9;
                     int yPos = currentPos / 9;
 
-                    Sudoku[xPos][yPos] = number;
+                    sudoku[xPos][yPos] = number;
 
                     available.get( currentPos ).remove( i );
 
@@ -73,7 +75,7 @@ import java.util.Random;
             int x = rand.nextInt( 9 );
             int y = rand.nextInt( 9 );
 
-            if (Sudoku[x][y] != 0) {
+            if (Sudoku[x][y] != -1) {
                 Sudoku[x][y] = -1;
                 i++;
             }
@@ -82,12 +84,12 @@ import java.util.Random;
 
     }
 
-    private void clearGrid(int[][] Sudoku) {
+    private void clearGrid(int[][] sudoku) {
         available.clear();
 
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
-                Sudoku[x][y] = 0;
+                sudoku[x][y] = 0;
             }
         }
 
@@ -98,14 +100,22 @@ import java.util.Random;
             }
         }
     }
+    public boolean checkConflict(int xPos,int yPos, final int number) {
+        if (isValidForColumn( number,xPos )
+                || isValidForRow(  number,yPos )
+                || !isValidForBox( xPos, yPos, number )) {
+            return true;
+        }
 
+        return false;
+    }
     private boolean checkConflict(int currentPos, final int number) {
         int xPos = currentPos % 9;
         int yPos = currentPos / 9;
 
         if (checkHorizontalConflict( xPos, yPos, number )
                 || checkVerticalConflict( xPos, yPos, number )
-                || checkRegionConflict( xPos, yPos, number )) {
+                || isValidForBox( xPos, yPos, number )) {
             return true;
         }
 
@@ -114,7 +124,7 @@ import java.util.Random;
 
     private boolean checkHorizontalConflict(final int xPos, final int yPos, final int number) {
         for (int x = xPos - 1; x >= 0; x--) {
-            if (number == Sudoku[x][yPos]) {
+            if (number == sudoku[x][yPos]) {
                 return true;
             }
         }
@@ -124,7 +134,7 @@ import java.util.Random;
 
     private boolean checkVerticalConflict(final int xPos, final int yPos, final int number) {
         for (int y = yPos - 1; y >= 0; y--) {
-            if (number == Sudoku[xPos][y]) {
+            if (number == sudoku[xPos][y]) {
                 return true;
             }
         }
@@ -132,13 +142,13 @@ import java.util.Random;
         return false;
     }
 
-    private boolean checkRegionConflict(final int xPos, final int yPos, final int number) {
+    private boolean isValidForBox( int xPos, final int yPos, final int number) {
         int xRegion = xPos / 3;
         int yRegion = yPos / 3;
 
         for (int x = xRegion * 3; x < xRegion * 3 + 3; x++) {
             for (int y = yRegion * 3; y < yRegion * 3 + 3; y++) {
-                if ((x != xPos || y != yPos) && number == Sudoku[x][y]) {
+                if ((x != xPos || y != yPos) && number == sudoku[x][y]) {
                     return true;
                 }
             }
@@ -146,9 +156,35 @@ import java.util.Random;
 
         return false;
     }
-     void setDifficulty(Difficulty difficulty) {
-         this.difficulty = difficulty;
-     }
+    boolean isValidForColumn(int number, int row) {
+        for (int i = 0; i < 9; i++) {
+            if (sudoku[i][row] ==  number )
+                return false;
 
 
+        }
+        return true;
+    }
+    boolean isValidForRow(int number, int col) {
+        for (int i = 0; i < 9; i++) {
+            if (sudoku[i][col] ==  number )
+                return false;
+
+
+        }
+        return true;
+    }
+        boolean isValidValue(int number){
+        return !(number>9 || number<0);
+        }
+
+
+    void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+
+    public boolean isValidCell(int row, int col) {
+        return row >-1 && row <9 && col > -1 && col < 9;
+    }
 }
