@@ -1,4 +1,4 @@
-package sudoku.stateTest;
+package sudoku.state;
 
 import org.junit.jupiter.api.Test;
 import sudoku.state.Difficulty;

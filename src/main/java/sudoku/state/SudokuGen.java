@@ -7,6 +7,9 @@ import java.util.Random;
 class SudokuGen {
     SudokuGen() {
     }
+    SudokuGen(Difficulty difficulty){
+        this.difficulty = difficulty;
+    }
 
 
 
@@ -16,6 +19,10 @@ class SudokuGen {
 
     private Difficulty difficulty;
 
+
+    public void setSudoku(int[][] sudoku) {
+        this.sudoku = sudoku;
+    }
 
     private int[][] sudoku = new int[9][9];
 
@@ -44,7 +51,7 @@ class SudokuGen {
                 int i = rand.nextInt( available.get( currentPos ).size() );
                 int number = available.get( currentPos ).get( i );
 
-                if (!checkConflict( currentPos, number )) {
+                if (!checkConflictBuild( currentPos, number )) {
                     int xPos = currentPos % 9;
                     int yPos = currentPos / 9;
 
@@ -100,31 +107,32 @@ class SudokuGen {
             }
         }
     }
-    public boolean checkConflict(int xPos,int yPos, final int number) {
-        if (isValidForColumn( number,xPos )
-                || isValidForRow(  number,yPos )
-                || !isValidForBox( xPos, yPos, number )) {
+
+    public boolean checkConflict(int row,int col,  int number) {
+        if ( isValidForColumn( number,row )
+                || isValidForRow(  number,col )
+                || !isValidForBox( row, col, number )) {
             return true;
         }
 
         return false;
     }
-    private boolean checkConflict(int currentPos, final int number) {
-        int xPos = currentPos % 9;
-        int yPos = currentPos / 9;
+    private boolean checkConflictBuild(int currentPos,  int number) {
+        int row = currentPos % 9;
+        int col = currentPos / 9;
 
-        if (checkHorizontalConflict( xPos, yPos, number )
-                || checkVerticalConflict( xPos, yPos, number )
-                || isValidForBox( xPos, yPos, number )) {
+        if (isValidForColumnBuild( row, col, number )
+                || isValidForRowBuild( row, col, number )
+                || isValidForBox( row, col, number )) {
             return true;
         }
 
         return false;
     }
 
-    private boolean checkHorizontalConflict(final int xPos, final int yPos, final int number) {
-        for (int x = xPos - 1; x >= 0; x--) {
-            if (number == sudoku[x][yPos]) {
+    private boolean isValidForColumnBuild( int row,  int col,  int number) {
+        for (int x = row - 1; x >= 0; x--) {
+            if (number == sudoku[x][col]) {
                 return true;
             }
         }
@@ -132,9 +140,9 @@ class SudokuGen {
         return false;
     }
 
-    private boolean checkVerticalConflict(final int xPos, final int yPos, final int number) {
-        for (int y = yPos - 1; y >= 0; y--) {
-            if (number == sudoku[xPos][y]) {
+    private boolean isValidForRowBuild( int row,  int col,  int number) {
+        for (int y = col - 1; y >= 0; y--) {
+            if (number == sudoku[row][y]) {
                 return true;
             }
         }
@@ -142,13 +150,13 @@ class SudokuGen {
         return false;
     }
 
-    private boolean isValidForBox( int xPos, final int yPos, final int number) {
-        int xRegion = xPos / 3;
-        int yRegion = yPos / 3;
+    private boolean isValidForBox( int row, final int col, final int number) {
+        int xBox = row / 3;
+        int yBox = col / 3;
 
-        for (int x = xRegion * 3; x < xRegion * 3 + 3; x++) {
-            for (int y = yRegion * 3; y < yRegion * 3 + 3; y++) {
-                if ((x != xPos || y != yPos) && number == sudoku[x][y]) {
+        for (int x = xBox * 3; x < xBox * 3 + 3; x++) {
+            for (int y = yBox * 3; y < yBox * 3 + 3; y++) {
+                if ((x != row || y != col) && number == sudoku[x][y]) {
                     return true;
                 }
             }
@@ -174,17 +182,21 @@ class SudokuGen {
         }
         return true;
     }
-        boolean isValidValue(int number){
-        return !(number>9 || number<0);
-        }
+
 
 
     void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
 
+    boolean isValidMove(int row,int col,int number){
+        return isValidCell(row,col  ) && isValidValue(  number);
+    }
 
     public boolean isValidCell(int row, int col) {
         return row >-1 && row <9 && col > -1 && col < 9;
+    }
+    boolean isValidValue(int number){
+        return !(number>9 || number<0);
     }
 }
