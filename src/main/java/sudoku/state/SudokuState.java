@@ -71,7 +71,7 @@ public class SudokuState implements Cloneable {
     public void writeToSudokuGrid(int row, int col, int number) throws IllegalArgumentException {
 
 
-        if (sudokuGen.isValidMove( row,col,number ) && sudokuGen.checkConflict( row, col, number )   )
+        if (sudokuGen.isValidMove( row, col, number ) && sudokuGen.checkConflict( row, col, number ))
             tray[row][col] = number;
         else {
             throw new IllegalArgumentException( "Invalid cell or number" );
@@ -136,6 +136,7 @@ public class SudokuState implements Cloneable {
             sb.append( "Empty :(" );
         } else {
             for (var element : best) {
+                //TODO formázás
                 sb.append( element.getPlayer() + " \t " + element.getDifficulty() + " \t\t\t " + element.getDuration().getSeconds() + "s\n" );
             }
 

@@ -5,36 +5,24 @@ import java.util.ArrayList;
 import java.util.Random;
 
 class SudokuGen {
-    SudokuGen() {
-    }
+    private Difficulty difficulty;
+    private int[][] sudoku = new int[9][9];
+    private Random rand = new Random();
+    private ArrayList<ArrayList<Integer>> available = new ArrayList<>();
+
+
+    SudokuGen() { }
+
     SudokuGen(Difficulty difficulty){
         this.difficulty = difficulty;
     }
 
 
 
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
-    private Difficulty difficulty;
-
-
-    public void setSudoku(int[][] sudoku) {
-        this.sudoku = sudoku;
-    }
-
-    private int[][] sudoku = new int[9][9];
-
-    private Random rand = new Random();
-
-    private ArrayList<ArrayList<Integer>> available = new ArrayList<>();
-
     int[][] getDesiredGrid() {
         generateGrid();
         return removeElements( sudoku );
     }
-
 
     void generateGrid() {
 
@@ -109,25 +97,23 @@ class SudokuGen {
     }
 
     public boolean checkConflict(int row,int col,  int number) {
-        if ( isValidForColumn( number,row )
+        return isValidForColumn( number,row )
                 || isValidForRow(  number,col )
-                || !isValidForBox( row, col, number )) {
-            return true;
-        }
+                || !isValidForBox( row, col, number );
 
-        return false;
+
+
+
     }
+
     private boolean checkConflictBuild(int currentPos,  int number) {
         int row = currentPos % 9;
         int col = currentPos / 9;
 
-        if (isValidForColumnBuild( row, col, number )
+        return  (isValidForColumnBuild( row, col, number )
                 || isValidForRowBuild( row, col, number )
-                || isValidForBox( row, col, number )) {
-            return true;
-        }
+                || isValidForBox( row, col, number ));
 
-        return false;
     }
 
     private boolean isValidForColumnBuild( int row,  int col,  int number) {
@@ -164,6 +150,7 @@ class SudokuGen {
 
         return false;
     }
+
     boolean isValidForColumn(int number, int row) {
         for (int i = 0; i < 9; i++) {
             if (sudoku[i][row] ==  number )
@@ -173,6 +160,7 @@ class SudokuGen {
         }
         return true;
     }
+
     boolean isValidForRow(int number, int col) {
         for (int i = 0; i < 9; i++) {
             if (sudoku[i][col] ==  number )
@@ -181,12 +169,6 @@ class SudokuGen {
 
         }
         return true;
-    }
-
-
-
-    void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty;
     }
 
     boolean isValidMove(int row,int col,int number){
@@ -198,5 +180,17 @@ class SudokuGen {
     }
     boolean isValidValue(int number){
         return !(number>9 || number<0);
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void setSudoku(int[][] sudoku) {
+        this.sudoku = sudoku;
     }
 }
