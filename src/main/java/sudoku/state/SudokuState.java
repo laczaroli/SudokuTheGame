@@ -192,7 +192,7 @@ public class SudokuState implements Cloneable {
 
 
         }
-        initBoard( Difficulty.TEST );
+       // initBoard( Difficulty.TEST );
 
 
         while (!isEnd()) {

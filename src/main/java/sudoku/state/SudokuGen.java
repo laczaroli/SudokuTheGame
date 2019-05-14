@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * The class representing a Sudoku solver with bruteforce.
+ */
 class SudokuGen {
     private static Logger logger = LoggerFactory.getLogger( SudokuGen.class );
 
@@ -75,7 +78,9 @@ class SudokuGen {
     }
 
     /**
-     * Returns the Sudoku grid, from  which we removed the appropiate number of cells.
+     * Returns the Sudoku grid, from  which we removed the appropriate number of cells.
+     *
+     * @return returns the Sudoku grid, from  which we removed the appropriate number of cells.
      */
     private int[][] removeElements() {
         int i = 0;
@@ -94,9 +99,12 @@ class SudokuGen {
     }
 
     /**
-     * Clears the sudoku grid and fills the available numbers for every cell.
+     * Clears the sudoku grid and fills the available numbers for every cell
      */
     private void clearGrid() {
+        /**
+         * For further singelton design
+         */
         available.clear();
 
         for (int y = 0; y < 9; y++) {
@@ -115,22 +123,26 @@ class SudokuGen {
 
     /**
      * Checks the cell and the number that the player wants to add if they are valid.
-     * @param row the row where the player wants to add the {@code number}.
-     * @param col the column where the player wants to add the {@code number}.
+     *
+     * @param row    the row where the player wants to add the {@code number}.
+     * @param col    the column where the player wants to add the {@code number}.
      * @param number the value that the player wants to add.
      * @return returns {@code true} if the entered values are valid,{@code false} if the entered values are not valid
      */
     public boolean checkConflict(int row, int col, int number) {
 
-        return isValidForColumn( number, row )
-                || isValidForRow( number, col )
-                || !isValidForBox( row, col, number );
+        return isValidForColumn( number, col )
+                && isValidForRow( number, row )
+                && !isValidForBox( row, col, number );
 
 
     }
 
     /**
-     *  Checks the 
+     * Checks if the number has  conflict within the grid when the grid is being built.
+     * @param currentPos the position where the {@code number} needs to be added
+     * @param number the value that the solver tries out
+     * @return returns {@code true} if the entered value fits,{@code false} if the entered value does'nt fit
      */
     private boolean checkConflictBuild(int currentPos, int number) {
         int row = currentPos % 9;
@@ -143,8 +155,15 @@ class SudokuGen {
     }
 
     /**
+     * Checks if the number has  conflict within the row when the grid is being built.
      *
+     * @param row    the row which limits the examination of the column
+     * @param col    the column where the solver tries to add the {@code number}
+     * @param number the number that the solver  tries out
+     * @return returns {@code false} if there is no conflict ,returns {@code true} if there is  conflict
      */
+
+
 
     private boolean isValidForColumnBuild(int row, int col, int number) {
         for (int x = row - 1; x >= 0; x--) {
@@ -157,7 +176,12 @@ class SudokuGen {
     }
 
     /**
+     * Checks if the number has  conflict within the row when the grid is being built.
      *
+     * @param row    the row where the solver tries to add the {@code number}
+     * @param col    the column which limits the examination of the column
+     * @param number the number that the solver  tries out
+     * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict
      */
 
     private boolean isValidForRowBuild(int row, int col, int number) {
@@ -171,7 +195,12 @@ class SudokuGen {
     }
 
     /**
+     * Checks if the entered number has no conflict within the box.
      *
+     * @param row    the row where the player wants to add the {@code number}
+     * @param col    the column where the player wants to add the {@code number}
+     * @param number the number that the player wants to add to the grid
+     * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict
      */
     private boolean isValidForBox(int row, final int col, final int number) {
         int xBox = row / 3;
@@ -189,12 +218,16 @@ class SudokuGen {
     }
 
     /**
+     * Checks if the entered number has  conflict within the column.
      *
+     * @param number the number that the player wants to add to the grid
+     * @param col    the column where the player wants to add the {@code number}
+     * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict
      */
 
-    boolean isValidForColumn(int number, int row) {
+    boolean isValidForColumn(int number, int col) {
         for (int i = 0; i < 9; i++) {
-            if (sudoku[i][row] == number)
+            if (sudoku[i][col] == number)
                 return false;
 
 
@@ -203,12 +236,16 @@ class SudokuGen {
     }
 
     /**
+     * Checks if the entered number has  conflict within the row.
      *
+     * @param number the number that the player wants to add to the grid
+     * @param row    the row where the player wants to add the {@code number}
+     * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict
      */
 
-    boolean isValidForRow(int number, int col) {
+    boolean isValidForRow(int number, int row) {
         for (int i = 0; i < 9; i++) {
-            if (sudoku[col][i] == number)
+            if (sudoku[row][i] == number)
                 return false;
 
 
@@ -219,21 +256,21 @@ class SudokuGen {
     /**
      * Checks if the entered cell and value are in range.
      *
-     * @param row    the row where the player wants to add the {@code number}.
-     * @param col    the column where the player wants to add the {@code number}.
-     * @param number the value that the player wants to add.
-     * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict.
+     * @param row    the row where the player wants to add the {@code number}
+     * @param col    the column where the player wants to add the {@code number}
+     * @param number the value that the player wants to add
+     * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict
      */
     boolean isValidMove(int row, int col, int number) {
-        return  isValidCell( row, col ) && isValidValue( number );
+        return isValidCell( row, col ) && isValidValue( number );
     }
 
     /**
      * Checks if the entered cell is in range.
      *
-     * @param row the row where the player wants to add the number.
-     * @param col the column where the player wants to add the number.
-     * @return returns {@code true} if it is  in  range ,returns {@code false} if it is  not in range.
+     * @param row the row where the player wants to add the number
+     * @param col the column where the player wants to add the number
+     * @return returns {@code true} if it is  in  range ,returns {@code false} if it is  not in range
      */
 
     public boolean isValidCell(int row, int col) {
@@ -241,13 +278,13 @@ class SudokuGen {
     }
 
     /**
-     * Checks if the entered {@code number} is in range.
+     * Checks if the entered {@code number} is in range
      *
-     * @param number the value that the player wants to add.
-     * @return returns {@code true} if it is  in  range ,returns {@code false} if it is not in range.
+     * @param number the value that the player wants to add
+     * @return returns {@code true} if it is  in  range ,returns {@code false} if it is not in range
      */
     boolean isValidValue(int number) {
-        return !(number > 9 || number < 0);
+        return !(number > 9 || 0 >= number);
     }
 
     public Difficulty getDifficulty() {
