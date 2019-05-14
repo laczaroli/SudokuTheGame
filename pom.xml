@@ -15,7 +15,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <exec.cleanupDaemonThreads>false</exec.cleanupDaemonThreads>
         <dependency.locations.enabled>false</dependency.locations.enabled>
-        <exec.mainClass>sudokuthegame.sudoku.state.SudokuState</exec.mainClass>
+        <exec.mainClass>sudoku.state.SudokuState</exec.mainClass>
     </properties>
     <name>Sudoku the game</name>
     <description>Sudoku implemented in Java.</description>
@@ -143,7 +143,7 @@
                 <version>3.2.1</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+
                         <goals>
                             <goal>shade</goal>
                         </goals>

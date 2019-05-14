@@ -2,6 +2,8 @@ package sudoku.state;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sudoku.results.GameResult;
 import sudoku.results.GameResultDao;
 import util.guice.PersistenceModule;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SudokuState implements Cloneable {
+    private static Logger logger = LoggerFactory.getLogger(SudokuState.class);
     public ZonedDateTime start, stop;
     public int[][] tray;
     private SudokuGen sudokuGen = new SudokuGen();
@@ -26,14 +29,17 @@ public class SudokuState implements Cloneable {
         SudokuState state = new SudokuState();
         Scanner in = new Scanner( System.in );
         System.out.println( "Type in your name!" );
+
         name = in.nextLine();
+        logger.info("Inserteted string: {}", name);
 
 
         while (true) {
             System.out.println( "What would you want to do?" );
             state.printMenu();
+            String menuItem  = in.nextLine();
             try {
-                switch (in.nextLine()) {
+                switch (menuItem) {
                     case "play":
 
                         state.play();
@@ -47,6 +53,8 @@ public class SudokuState implements Cloneable {
                     case "exit":
                         System.exit( 0 );
                     default:
+                        logger.error("Invalid option was choosen: {}", menuItem);
+
                         throw new IllegalArgumentException( "Invalid option" );
                 }
             } catch (Exception e) {
@@ -58,10 +66,12 @@ public class SudokuState implements Cloneable {
     }
 
     public Difficulty getDifficulty() {
+
         return sudokuGen.getDifficulty();
     }
 
     public void initBoard(Difficulty difficulty) {
+        logger.info("Player selected {} difficulty",difficulty);
         sudokuGen.setDifficulty( difficulty );
         tray = sudokuGen.getDesiredGrid();
 
@@ -70,6 +80,7 @@ public class SudokuState implements Cloneable {
 
     public void writeToSudokuGrid(int row, int col, int number) throws IllegalArgumentException {
 
+    logger.info("Player wants to write to row: {}, column: {} the number: {}",row,col,number);
 
         if (sudokuGen.isValidMove( row, col, number ) && sudokuGen.checkConflict( row, col, number ))
             tray[row][col] = number;
@@ -84,6 +95,7 @@ public class SudokuState implements Cloneable {
         for (int[] row : tray) {
             for (int square : row) {
                 if (square == -1) {
+                    logger.trace( "The end!" );
                     return false;
                 }
             }
@@ -118,7 +130,13 @@ public class SudokuState implements Cloneable {
         System.out.println( "Exit: exit" );
     }
 
+    /**
+     * Creates a {@code GameResult} instance .
+     * @param name the name of the player.
+     * @return Returns a {@code GameResult} with the desired name.
+     */
     public GameResult save(String name) {
+        logger.info( "Saving to database." );
         return GameResult.builder()
                 .player( name )
                 .difficulty( getDifficulty() )
@@ -129,6 +147,7 @@ public class SudokuState implements Cloneable {
     }
 
     private String getTops(List<GameResult> best) {
+        logger.info("Top 10 players");
         StringBuilder sb = new StringBuilder();
         sb.append( "Top 10 players \n" );
         sb.append( "Name \t Difficulty \t Duration \n" );
@@ -145,7 +164,8 @@ public class SudokuState implements Cloneable {
     }
 
     private void play() {
-        int row, col, number;
+        logger.info("START GAME");
+        int row = -1, col= -1, number=-1;
 
 
         System.out.println( "Select a diffculty!(0-2)" );
@@ -154,9 +174,11 @@ public class SudokuState implements Cloneable {
         System.out.println( "Hard" );
         start = ZonedDateTime.now();
         Scanner in = new Scanner( System.in );
-        switch (in.nextInt()) {
+        int menuItem = in.nextInt();
+        switch (menuItem) {
             case 0:
                 initBoard( Difficulty.EASY );
+
                 break;
             case 1:
                 initBoard( Difficulty.MEDIUM );
@@ -165,6 +187,7 @@ public class SudokuState implements Cloneable {
                 initBoard( Difficulty.HARD );
                 break;
             default:
+                logger.error( "Invalid difficulty: {}",menuItem );
                 throw new IllegalArgumentException( "Invalid difficulty" );
 
 
@@ -176,23 +199,40 @@ public class SudokuState implements Cloneable {
             System.out.println( toString() );
             System.out.println( "Enter the row, column and the number you want to add or if you want to quit(q): " );
 
-            if (in.nextLine().equals( "q" ))
+            if (in.nextLine().equals( "q" )) {
+                logger.error( "Player quits the game." );
                 break;
-            row = in.nextInt();
-            col = in.nextInt();
-            number = in.nextInt();
+            }
+
+
+             if (isValidInput( in ))
+                 row = in.nextInt();
+             if (isValidInput( in ))
+                 col = in.nextInt();
+             if (isValidInput( in ))
+                 number = in.nextInt();
 
             try {
+
                 writeToSudokuGrid( row - 1, col - 1, number );
             } catch (Exception e) {
+                logger.error( "Cannot write to SudokuGrid" );
                 System.out.println( e.getMessage() );
             }
 
-            stop = ZonedDateTime.now();
+
         }
-        System.out.println( toString() );
+        stop = ZonedDateTime.now();
+
 
     }
 
-
+        boolean isValidInput(Scanner in) throws IllegalArgumentException  {
+            if (in.hasNextInt()) {
+                return true;
+                }
+            else {
+                throw new IllegalArgumentException("Invalid input!");
+            }
+        }
 }

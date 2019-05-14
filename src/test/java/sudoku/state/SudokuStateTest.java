@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import sudoku.state.Difficulty;
 import sudoku.state.SudokuState;
 
+import java.util.Scanner;
+
 import static org.junit.jupiter.api.Assertions.*;
 public class SudokuStateTest {
         private void assertEmptySpaces(int expectedEmptyCells,int[][] grid ){
@@ -38,4 +40,6 @@ public class SudokuStateTest {
         state.initBoard( Difficulty.TEST2 );
         assertThrows( IllegalArgumentException.class,()->state.writeToSudokuGrid( 10,1,10 ) );
     }
+
+
 }

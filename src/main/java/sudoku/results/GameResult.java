@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 
 /**
- * Class representing the sudoku.results of a game played by a specific player.
+ * Class representing the results of a game played by a specific player.
  */
 @Data
 @NoArgsConstructor
