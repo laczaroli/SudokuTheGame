@@ -15,6 +15,7 @@ class SudokuGen {
 
     private Difficulty difficulty;
     private int[][] sudoku = new int[9][9];
+    private int[][] sudokuGame;
 
     private Random rand = new Random();
     private ArrayList<ArrayList<Integer>> available = new ArrayList<>();
@@ -25,6 +26,57 @@ class SudokuGen {
 
     SudokuGen(Difficulty difficulty) {
         this.difficulty = difficulty;
+    }
+    /**
+     * Initialize the Sudoku board with the desired difficulty.
+     *
+     * @param difficulty the chosen difficulty
+     */
+    public void initBoard(Difficulty difficulty) {
+        logger.info( "Player selected {} difficulty", difficulty );
+        setDifficulty( difficulty );
+       sudokuGame = getDesiredGrid();
+
+
+    }
+    /**
+     * Checks if the game is over.
+     *
+     * @return returns {@code True} if the game is over and returns {@code false} if the game is not over
+     */
+
+    public boolean isEnd() {
+        for (int[] row : sudokuGame) {
+            for (int square : row) {
+                if (square == -1) {
+                    logger.trace( "The end!" );
+                    return false;
+                }
+            }
+        }
+        return true;
+
+    }
+    /**
+     * Operator to write into the Sudoku grid.
+     *
+     * @param row    the row where the player wants to add  the {@code number}
+     * @param col    the column where the player wants to add  the {@code number}
+     * @param number the value that the player wants to add to the grid.
+     * @throws IllegalArgumentException when the player input is not valid
+     */
+    public void writeToSudokuGrid(int row, int col, int number) throws IllegalArgumentException {
+
+        logger.info( "Player wants to write to row: {}, column: {} the number: {}", row, col, number );
+
+        if (isValidMove( row, col, number ) && checkConflict( row, col, number ))
+            sudokuGame[row][col] = number;
+        else {
+            logger.error( "Invalid cell or number" );
+            throw new IllegalArgumentException( "Invalid cell or number" );
+        }
+
+
     }
 
     /**
@@ -298,4 +350,29 @@ class SudokuGen {
     public void setSudoku(int[][] sudoku) {
         this.sudoku = sudoku;
     }
+
+
+    public int[][] getSudokuGame() {
+        return sudokuGame;
+    }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "  - - - - - - - - - - - - -\n" );
+        for (int i = 0; i < sudokuGame.length; i++) {
+            for (int j = 0; j < sudokuGame[0].length; j++) {
+
+                sb.append( j == 0 ? i + 1 : "" ).append( j == 0 ? " | " : " " ).append( sudokuGame[i][j] == -1 ? "." : (sudokuGame[i][j]) ).append( (j + 1) % 3 == 0 ? " |" : "" );
+            }
+            sb.append( "\n" ).append( (i + 1) % 3 == 0 ? "  - - - - - - - - - - - - -\n" : "" );
+        }
+        sb.append( "\t" );
+        for (int i = 1; i < 10; i++) {
+            sb.append( i ).append( i % 3 == 0 ? "\t" : " " );
+        }
+        sb.append( "\n" );
+
+        return sb.toString();
+    }
+
 }

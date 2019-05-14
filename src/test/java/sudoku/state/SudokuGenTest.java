@@ -2,8 +2,7 @@ package sudoku.state;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SudokuGenTest {
     SudokuGen sudokuGen = new SudokuGen( );
@@ -77,5 +76,36 @@ class SudokuGenTest {
         }
 
         assertFalse( sudokuGen.isValidCell( 10, -1 ) );
+    }
+    @Test
+    void testInitBoard() {
+
+        sudokuGen.initBoard( Difficulty.TEST );
+        assertEmptySpaces( Difficulty.TEST.getValue(),sudokuGen.getSudokuGame() );
+        sudokuGen.initBoard( Difficulty.EASY );
+        assertEmptySpaces( Difficulty.EASY.getValue(),sudokuGen.getSudokuGame());
+        sudokuGen.initBoard( Difficulty.MEDIUM );
+        assertEmptySpaces( Difficulty.MEDIUM.getValue(),sudokuGen.getSudokuGame() );
+        sudokuGen.initBoard( Difficulty.HARD );
+        assertEmptySpaces( Difficulty.HARD.getValue(),sudokuGen.getSudokuGame() );
+    }
+    @Test
+    void testWriteToSudokuGrid(){
+
+
+        sudokuGen.initBoard( Difficulty.TEST2 );
+        assertThrows( IllegalArgumentException.class,()->sudokuGen.writeToSudokuGrid( 10,1,10 ) );
+    }
+    private void assertEmptySpaces(int expectedEmptyCells,int[][] grid ){
+        int counter=0;
+        for(int[]row :grid){
+            for (int cell:row ){
+                if (cell==-1)
+                    counter++;
+            }
+        }
+        assertEquals(expectedEmptyCells,counter);
+
+
     }
 }
