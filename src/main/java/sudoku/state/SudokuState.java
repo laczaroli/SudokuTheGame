@@ -161,24 +161,23 @@ public class SudokuState implements Cloneable {
 /**
  *  For test purposes use   initBoard( Difficulty.TEST ); here
  */
+        sudokuGen.initBoard( Difficulty.TEST );
 
 
-        while (!sudokuGen.isEnd()) {
+        while (!sudokuGen.isEnd() ) {
             System.out.println( sudokuGen );
-            System.out.println( "Enter the row, column and the number you want to add or if you want to quit(q): " );
+            System.out.println( "Enter the row, column and the number you want to add " );
             if (in.hasNextLine()) {
-                if (in.nextLine().equals( "q" )) {
-                    logger.info( "Player quits the game." );
-                    break;
-                }
 
-
-                if (isValidInput( in ))
-                    row = in.nextInt();
-                if (isValidInput( in ))
-                    col = in.nextInt();
-                if (isValidInput( in ))
-                    number = in.nextInt();
+                String temp = ""+in.nextInt();
+                if(isInteger( temp ))
+                    row = Integer.parseInt(temp);
+                temp = ""+in.nextInt();
+                if(isInteger( temp ))
+                    col = Integer.parseInt(temp);
+                temp = ""+in.nextInt();
+                if(isInteger( temp ))
+                    number = Integer.parseInt(temp);
 
                 try {
 
@@ -198,11 +197,25 @@ public class SudokuState implements Cloneable {
 
     }
 
-    boolean isValidInput(Scanner in) throws IllegalArgumentException {
-        if (in.hasNextInt()) {
+    /**
+     * Check if the {@code object} param is a {@ocde Integer}
+     * @param object the user input
+     * @return returns {@code true} if {@code object} is Integer,returns {@code false} {@code object} is not Integer
+     */
+    private static boolean isInteger(Object object){
+        if(object instanceof Integer){
             return true;
-        } else {
-            throw new IllegalArgumentException( "Invalid input!" );
+
+        }else {
+            String string = object.toString();
+            try{
+                Integer.parseInt( string );
+            }catch (Exception e){
+                return false;
+            }
         }
+        return true;
     }
+
+
 }
