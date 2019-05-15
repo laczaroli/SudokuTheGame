@@ -193,7 +193,7 @@ public class SudokuState implements Cloneable {
             }
         }
         stop = ZonedDateTime.now();
-
+        System.out.println( "You won");
 
     }
 
