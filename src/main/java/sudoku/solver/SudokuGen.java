@@ -21,10 +21,10 @@ public class SudokuGen {
     private ArrayList<ArrayList<Integer>> available = new ArrayList<>();
 
 
-    SudokuGen() {
+   public SudokuGen() {
     }
 
-    SudokuGen(Difficulty difficulty) {
+    public SudokuGen(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
     /**

@@ -120,7 +120,7 @@ public class SudokuState implements Cloneable {
             sb.append( "Empty :(" );
         } else {
             for (var element : best) {
-                sb.append( element.getDifficulty() + " \t" + element.getDuration().getSeconds() + "s\t" + element.getPlayer() + "\n" );
+                sb.append( element.getDifficulty() + " \t" + element.getDuration().getSeconds() + "s\t\t\t" + element.getPlayer() + "\n" );
             }
 
         }
@@ -160,9 +160,6 @@ public class SudokuState implements Cloneable {
 
 
         }
-/**
- *  For test purposes use   initBoard( Difficulty.TEST ); here
- */
         sudokuGen.initBoard( Difficulty.TEST );
 
 
@@ -200,7 +197,7 @@ public class SudokuState implements Cloneable {
     }
 
     /**
-     * Check if the {@code object} param is a {@ocde Integer}
+     * Check if the {@code object} param is a {@code Integer}
      * @param object the user input
      * @return returns {@code true} if {@code object} is Integer,returns {@code false} {@code object} is not Integer
      */
