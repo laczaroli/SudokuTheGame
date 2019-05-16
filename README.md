@@ -1,5 +1,5 @@
 # SudokuTheGame
-A command line sudok game implemented in java.
+A command line sudoku game implemented in java.
 
 
 When you start the game you can choose between play, tops and exit.

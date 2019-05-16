@@ -1,4 +1,4 @@
-package sudoku.state;
+package sudoku.solver;
 
 
 import org.slf4j.Logger;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * The class representing a Sudoku solver with bruteforce.
+ * The class representing a Sudoku sudoku.solver with bruteforce.
  */
-class SudokuGen {
+public class SudokuGen {
     private static Logger logger = LoggerFactory.getLogger( SudokuGen.class );
 
     private Difficulty difficulty;
@@ -33,7 +33,7 @@ class SudokuGen {
      * @param difficulty the chosen difficulty
      */
     public void initBoard(Difficulty difficulty) {
-        logger.info( "Player selected {} difficulty", difficulty );
+        logger.debug( "Player selected {} difficulty", difficulty );
         setDifficulty( difficulty );
        sudokuGame = getDesiredGrid();
 
@@ -49,11 +49,12 @@ class SudokuGen {
         for (int[] row : sudokuGame) {
             for (int square : row) {
                 if (square == -1) {
-                    logger.trace( "The end!" );
+
                     return false;
                 }
             }
         }
+        logger.debug( "The end!" );
         return true;
 
     }
@@ -193,7 +194,7 @@ class SudokuGen {
     /**
      * Checks if the number has  conflict within the grid when the grid is being built.
      * @param currentPos the position where the {@code number} needs to be added
-     * @param number the value that the solver tries out
+     * @param number the value that the sudoku.solver tries out
      * @return returns {@code true} if the entered value fits,{@code false} if the entered value does'nt fit
      */
     private boolean checkConflictBuild(int currentPos, int number) {
@@ -210,8 +211,8 @@ class SudokuGen {
      * Checks if the number has  conflict within the row when the grid is being built.
      *
      * @param row    the row which limits the examination of the column
-     * @param col    the column where the solver tries to add the {@code number}
-     * @param number the number that the solver  tries out
+     * @param col    the column where the sudoku.solver tries to add the {@code number}
+     * @param number the number that the sudoku.solver  tries out
      * @return returns {@code false} if there is no conflict ,returns {@code true} if there is  conflict
      */
 
@@ -230,9 +231,9 @@ class SudokuGen {
     /**
      * Checks if the number has  conflict within the row when the grid is being built.
      *
-     * @param row    the row where the solver tries to add the {@code number}
+     * @param row    the row where the sudoku.solver tries to add the {@code number}
      * @param col    the column which limits the examination of the column
-     * @param number the number that the solver  tries out
+     * @param number the number that the sudoku.solver  tries out
      * @return returns {@code true} if there is no conflict ,returns {@code false} if there is  conflict
      */
 

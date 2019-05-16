@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sudoku.results.GameResult;
 import sudoku.results.GameResultDao;
+import sudoku.solver.Difficulty;
+import sudoku.solver.SudokuGen;
 import util.guice.PersistenceModule;
 
 import java.time.Duration;

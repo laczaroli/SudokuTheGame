@@ -1,7 +1,7 @@
-package sudoku.state;
+package sudoku.solver;
 
 import org.junit.jupiter.api.Test;
-import sudoku.state.Difficulty;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 

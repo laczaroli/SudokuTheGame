@@ -1,4 +1,4 @@
-package sudoku.state;
+package sudoku.solver;
 
 import org.junit.jupiter.api.Test;
 

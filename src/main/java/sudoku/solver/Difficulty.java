@@ -1,4 +1,4 @@
-package sudoku.state;
+package sudoku.solver;
 
 public enum Difficulty {
     TEST( 1 ),

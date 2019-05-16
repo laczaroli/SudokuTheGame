@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import sudoku.state.Difficulty;
+import sudoku.solver.Difficulty;
 
 import javax.persistence.*;
 import java.time.Duration;
